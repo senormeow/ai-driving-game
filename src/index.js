@@ -6,25 +6,12 @@ var canvas = document.getElementById("canv");
 paper.setup(canvas);
 //paper.install(window);
 /* global view */
+
 var path = new paper.Path();
 path.strokeColor = "black";
-var start = new paper.Point(100, 100);
+var start = new paper.Point(700, 100);
 path.moveTo(start);
-// Note that the plus operator on Point objects does not work
-// in JavaScript. Instead, we need to call the add() function:
-path.lineTo(start.add([200, -50]));
-
-var tool = new paper.Tool();
-
-tool.onMouseDown = function(event) {
-  path = new paper.Path();
-  path.strokeColor = "black";
-  path.add(event.point);
-};
-
-tool.onMouseDrag = function(event) {
-  path.add(event.point);
-};
+path.lineTo(start.add([50, 400]));
 
 // Draw the view now:
 paper.view.draw();
@@ -69,7 +56,7 @@ class Car {
       angle: 0,
       length: 1
     });
-    this.speed = 1;
+    this.speed = 0;
     //this.carGroup.vector = this.vector;
   }
 
@@ -116,6 +103,16 @@ right.press = () => {
   car.right();
 };
 
+//let np = path.getNearestPoint(car.position);
+let carvec = new paper.Point(car.position);
+carvec.length = 5;
+carvec.angle = 88;
+console.log("carvec", carvec);
+
+//console.log("np", np);
+var line = new paper.Path.Line(carvec, car.position);
+line.strokeColor = "black";
+
 paper.view.onFrame = function(event) {
   // On each frame, rotate the path by 3 degrees:
   //path.rotate(3);
@@ -124,5 +121,5 @@ paper.view.onFrame = function(event) {
   var inte = car.carGroup.intersects(rect);
 
   //var inte = path.intersects(car.carGroup.bounds);
-  console.log(inte);
+  //console.log(inte);
 };
