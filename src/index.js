@@ -1,149 +1,81 @@
 import paper from "paper";
 import keyboard from "./keyboard";
+import Car from "./car";
+import Road from "./road";
+(async () => {
+  var canvas = document.getElementById("canv");
 
-var canvas = document.getElementById("canv");
+  paper.setup(canvas);
+  //paper.install(window);
+  /* global view */
 
-paper.setup(canvas);
-//paper.install(window);
-/* global view */
+  // var path = new paper.Path();
+  // path.strokeColor = "black";
+  // var start = new paper.Point(700, 100);
+  // path.moveTo(start);
+  // path.lineTo(start.add([50, 400]));
 
-var path = new paper.Path();
-path.strokeColor = "black";
-var start = new paper.Point(700, 100);
-path.moveTo(start);
-path.lineTo(start.add([50, 400]));
+  // Draw the view now:
+  // paper.view.draw();
+  // console.log(paper.view.bounds);
 
-// Draw the view now:
-paper.view.draw();
-console.log(paper.view.bounds);
+  let flag = new paper.Path.Rectangle(
+    new paper.Rectangle(new paper.Point(500, 500), new paper.Point(600, 600))
+  );
 
-class Car {
-  constructor() {
-    console.log("New Car");
-    this.position = new paper.Point(
-      paper.view.bounds.width / 2,
-      paper.view.bounds.height / 2
-    );
-    console.log("car position", this.position);
-    let rectangle = new paper.Rectangle(
-      new paper.Point(50, 50),
-      new paper.Point(150, 100)
-    );
-    let cornerSize = new paper.Size(20, 20);
-    let carBody = new paper.Path.RoundRectangle(rectangle, cornerSize);
-    carBody.fillColor = "orange";
-    carBody.strokeColor = "black";
-    //construct the windshield via Rectangle constructors
-    let headlight = new paper.Path.Arc({
-      from: carBody.segments[4].point,
-      through: [149, 65],
-      to: carBody.segments[5].point,
-      strokeColor: "black",
-      fillColor: "grey",
-      closed: true
-    });
+  flag.strokeColor = "black";
+  flag.fillColor = "blue";
 
-    let headlight2 = headlight.clone();
-    headlight2.position.y += 30;
-    headlight2.scale(-1, 1);
-    headlight2.rotate(180);
+  var road = await Road();
+  console.log(road);
 
-    this.carGroup = new paper.Group(carBody, headlight, headlight2);
-    this.carGroup.strokeColor = "black";
-    this.carGroup.applyMatrix = false;
+  var car = new Car(new paper.Point(400, 75), flag);
 
-    this.vector = new paper.Point({
-      angle: 0,
-      length: 1
-    });
-    this.speed = 0;
-    //this.carGroup.vector = this.vector;
-  }
+  keyboard("ArrowLeft").press = () => {
+    car.left();
+  };
 
-  left() {
-    console.log("left");
-    this.vector.angle -= 15;
-  }
+  keyboard("ArrowRight").press = () => {
+    car.right();
+  };
 
-  right() {
-    console.log("right");
-    this.vector.angle += 15;
-  }
+  keyboard("ArrowUp").press = () => {
+    car.foward();
+  };
 
-  draw() {
-    var vec = this.vector.normalize(Math.abs(this.speed));
-    this.position = this.position.add(vec);
-    //console.log(vec);
-    //console.log("new pos", this.position);
-    let rotation = this.vector.angle;
-    this.carGroup.position = this.position;
-    this.carGroup.rotation = rotation;
+  keyboard("ArrowDown").press = () => {
+    car.break();
+  };
 
-    //    console.log(rotation, this.carGroup.rotation);
-  }
-}
+  //let np = path.getNearestPoint(car.position);
+  // let carvec = new paper.Point(car.position);
+  // carvec.length = 5;
+  // carvec.angle = 88;
+  // console.log("carvec", carvec);
 
-let rect = new paper.Path.Rectangle(
-  new paper.Rectangle(new paper.Point(500, 500), new paper.Point(600, 600))
-);
+  //console.log("np", np);
+  // var line = new paper.Path.Line(carvec, car.position);
+  // line.strokeColor = "black";
 
-rect.strokeColor = "black";
-rect.fillColor = "blue";
+  window.car = car.carGroup;
+  window.road = road;
 
-var car = new Car();
+  paper.view.onFrame = function(event) {
+    // On each frame, rotate the path by 3 degrees:
+    //path.rotate(3);
+    car.draw();
 
-let left = keyboard("ArrowLeft");
-let right = keyboard("ArrowRight");
+    //var inte = car.carGroup.intersects(rect);
 
-left.press = () => {
-  car.left();
-};
+    //var inte = path.intersects(car.carGroup.bounds);
 
-right.press = () => {
-  car.right();
-};
+    if (car.carGroup.intersects(road.innerRoad)) {
+      car.hit("inner");
+    }
+    if (car.carGroup.intersects(road.outterRoad)) {
+      car.hit("outter");
+    }
 
-//let np = path.getNearestPoint(car.position);
-let carvec = new paper.Point(car.position);
-carvec.length = 5;
-carvec.angle = 88;
-console.log("carvec", carvec);
-
-//console.log("np", np);
-var line = new paper.Path.Line(carvec, car.position);
-line.strokeColor = "black";
-var road = undefined;
-
-new paper.Item().importSVG("assets/main_track-split.svg", item => {
-  road = item;
-  console.log("road", road);
-  //window.road = road;
-
-  var roadParts = new paper.CompoundPath();
-  roadParts.copyContent(road.children[1].children[0]);
-  //debugger;
-
-  roadParts.fillColor = "#999999";
-  //roadParts.strokeColor = "red";
-
-  var innerRoad = new paper.Path();
-  innerRoad.copyContent(roadParts.children[1]);
-  innerRoad.strokeColor = "black";
-
-  var outterRoad = new paper.Path();
-  outterRoad.copyContent(roadParts.children[0]);
-  outterRoad.strokeColor = "black";
-
-  //console.log(myPath);
-});
-
-paper.view.onFrame = function(event) {
-  // On each frame, rotate the path by 3 degrees:
-  //path.rotate(3);
-  car.draw();
-
-  var inte = car.carGroup.intersects(rect);
-
-  //var inte = path.intersects(car.carGroup.bounds);
-  //console.log(inte);
-};
+    //console.log(inte);
+  };
+})();
