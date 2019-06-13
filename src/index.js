@@ -112,6 +112,30 @@ console.log("carvec", carvec);
 //console.log("np", np);
 var line = new paper.Path.Line(carvec, car.position);
 line.strokeColor = "black";
+var road = undefined;
+
+new paper.Item().importSVG("assets/main_track-split.svg", item => {
+  road = item;
+  console.log("road", road);
+  //window.road = road;
+
+  var roadParts = new paper.CompoundPath();
+  roadParts.copyContent(road.children[1].children[0]);
+  //debugger;
+
+  roadParts.fillColor = "#999999";
+  //roadParts.strokeColor = "red";
+
+  var innerRoad = new paper.Path();
+  innerRoad.copyContent(roadParts.children[1]);
+  innerRoad.strokeColor = "black";
+
+  var outterRoad = new paper.Path();
+  outterRoad.copyContent(roadParts.children[0]);
+  outterRoad.strokeColor = "black";
+
+  //console.log(myPath);
+});
 
 paper.view.onFrame = function(event) {
   // On each frame, rotate the path by 3 degrees:
