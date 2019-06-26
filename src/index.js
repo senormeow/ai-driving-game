@@ -1,7 +1,9 @@
 import paper from "paper";
 import keyboard from "./keyboard";
 import Car from "./car";
-import Road from "./road";
+import Road from "./road"
+//import ai from "./ai";
+
 (async () => {
   var canvas = document.getElementById("canv");
 
@@ -18,6 +20,8 @@ import Road from "./road";
   // Draw the view now:
   // paper.view.draw();
   // console.log(paper.view.bounds);
+
+  // console.log('ai', ai());
 
   let flag = new paper.Path.Rectangle(
     new paper.Rectangle(new paper.Point(500, 500), new paper.Point(600, 600))
@@ -69,12 +73,15 @@ import Road from "./road";
 
     //var inte = path.intersects(car.carGroup.bounds);
 
+    car.getLineDistance(road);
+
     if (car.carGroup.intersects(road.innerRoad)) {
       car.hit("inner");
     }
     if (car.carGroup.intersects(road.outterRoad)) {
       car.hit("outter");
     }
+
 
     //console.log(inte);
   };

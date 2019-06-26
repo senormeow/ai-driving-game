@@ -42,6 +42,30 @@ class Car {
     });
     this.speed = 0;
     //this.carGroup.vector = this.vector;
+
+    this.distLine1 = new paper.Path.Line({
+      from: [0, 0],
+      to: [150, 150],
+      strokeColor: "red"
+    });
+    this.distLine2 = new paper.Path.Line({
+      from: [0, 0],
+      to: [200, 0],
+      strokeColor: "green"
+    });
+    this.distLine3 = new paper.Path.Line({
+      from: [0, 0],
+      to: [150, -150],
+      strokeColor: "blue"
+    });
+
+    this.distLines = new paper.Group(
+      this.distLine1,
+      this.distLine2,
+      this.distLine3
+    );
+    this.distLines.pivot = new paper.Point(0, 0);
+    this.distLines.applyMatrix = false;
   }
 
   left() {
@@ -60,6 +84,7 @@ class Car {
   }
 
   break() {
+    console.log(this.distLines.children[1]);
     this.speed -= 1;
     if (this.speed < 0) {
       this.speed = 0;
@@ -74,6 +99,13 @@ class Car {
     this.vector.angle = 0;
   }
 
+  getLineDistance(road) {
+    let line2inter = road.innerRoad.getIntersections(this.distLines.children[1]);
+    if (line2inter.length > 0) {
+      console.log("intersect", line2inter);
+    }
+  }
+
   draw() {
     var vec = this.vector.normalize(Math.abs(this.speed));
     this.position = this.position.add(vec);
@@ -82,6 +114,8 @@ class Car {
     let rotation = this.vector.angle;
     this.carGroup.position = this.position;
     this.carGroup.rotation = rotation;
+    this.distLines.position = this.position;
+    this.distLines.rotation = rotation;
 
     //    console.log(rotation, this.carGroup.rotation);
   }
