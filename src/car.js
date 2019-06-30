@@ -84,7 +84,7 @@ class Car {
   }
 
   break() {
-    console.log(this.distLines.children[1]);
+    console.log(this.distLines.children[1].clone());
     this.speed -= 1;
     if (this.speed < 0) {
       this.speed = 0;
