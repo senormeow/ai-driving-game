@@ -1,11 +1,15 @@
 import paper from "paper";
 import keyboard from "./keyboard";
 import Car from "./car";
-import Road from "./road"
+import Road from "./road";
+// import neataptic from "neataptic";
 //import ai from "./ai";
 
 (async () => {
   var canvas = document.getElementById("canv");
+
+  // var myNetwork = new neataptic.Network(2, 1);
+  // console.log(myNetwork);
 
   paper.setup(canvas);
   //paper.install(window);
@@ -73,7 +77,7 @@ import Road from "./road"
 
     //var inte = path.intersects(car.carGroup.bounds);
 
-    car.getLineDistance(road);
+    //car.getLineDistance(road);
 
     if (car.carGroup.intersects(road.innerRoad)) {
       car.hit("inner");
@@ -81,7 +85,6 @@ import Road from "./road"
     if (car.carGroup.intersects(road.outterRoad)) {
       car.hit("outter");
     }
-
 
     //console.log(inte);
   };

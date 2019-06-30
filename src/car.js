@@ -43,9 +43,13 @@ class Car {
     this.speed = 0;
     //this.carGroup.vector = this.vector;
 
+    let twoPoint = new paper.Point(0, 0);
+    twoPoint.angle = 42;
+    twoPoint.length = 400;
+
     this.distLine1 = new paper.Path.Line({
       from: [0, 0],
-      to: [150, 150],
+      to: twoPoint,
       strokeColor: "red"
     });
     this.distLine2 = new paper.Path.Line({
@@ -59,13 +63,15 @@ class Car {
       strokeColor: "blue"
     });
 
-    this.distLines = new paper.Group(
-      this.distLine1,
-      this.distLine2,
-      this.distLine3
-    );
-    this.distLines.pivot = new paper.Point(0, 0);
-    this.distLines.applyMatrix = false;
+    // this.distLines = new paper.Group(
+    //   this.distLine1,
+    //   this.distLine2,
+    //   this.distLine3
+    // );
+    // this.distLines.pivot = new paper.Point(0, 0);
+    // this.distLines.applyMatrix = false;
+    this.distLine2.applyMatrix = false;
+    this.distLine2.pivot = new paper.Point(0, 0);
   }
 
   left() {
@@ -84,7 +90,8 @@ class Car {
   }
 
   break() {
-    console.log(this.distLines.children[1].clone());
+    this.getLineDistance(window.road);
+
     this.speed -= 1;
     if (this.speed < 0) {
       this.speed = 0;
@@ -100,9 +107,12 @@ class Car {
   }
 
   getLineDistance(road) {
-    let line2inter = road.innerRoad.getIntersections(this.distLines.children[1]);
+    let line2inter = road.innerRoad.getIntersections(this.distLine2);
     if (line2inter.length > 0) {
-      console.log("intersect", line2inter);
+      console.log("intersect", line2inter.toString());
+      console.log(this.position, line2inter[0].point);
+      var line2dist = this.position.getDistance(line2inter[0].point);
+      console.log(line2dist);
     }
   }
 
@@ -114,8 +124,8 @@ class Car {
     let rotation = this.vector.angle;
     this.carGroup.position = this.position;
     this.carGroup.rotation = rotation;
-    this.distLines.position = this.position;
-    this.distLines.rotation = rotation;
+    this.distLine2.position = this.position;
+    this.distLine2.rotation = rotation;
 
     //    console.log(rotation, this.carGroup.rotation);
   }
