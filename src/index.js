@@ -55,6 +55,12 @@ import Road from "./road";
     car.break();
   };
 
+  keyboard(" ").press = () => {
+   console.log("FOV", car.getFov()); 
+  };
+
+
+
   //let np = path.getNearestPoint(car.position);
   // let carvec = new paper.Point(car.position);
   // carvec.length = 5;

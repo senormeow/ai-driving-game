@@ -1,4 +1,5 @@
 import paper from "paper";
+import Fov from "./fov";
 
 class Car {
   constructor(start, flag) {
@@ -43,35 +44,8 @@ class Car {
     this.speed = 0;
     //this.carGroup.vector = this.vector;
 
-    let twoPoint = new paper.Point(0, 0);
-    twoPoint.angle = 42;
-    twoPoint.length = 400;
-
-    this.distLine1 = new paper.Path.Line({
-      from: [0, 0],
-      to: twoPoint,
-      strokeColor: "red"
-    });
-    this.distLine2 = new paper.Path.Line({
-      from: [0, 0],
-      to: [200, 0],
-      strokeColor: "green"
-    });
-    this.distLine3 = new paper.Path.Line({
-      from: [0, 0],
-      to: [150, -150],
-      strokeColor: "blue"
-    });
-
-    // this.distLines = new paper.Group(
-    //   this.distLine1,
-    //   this.distLine2,
-    //   this.distLine3
-    // );
-    // this.distLines.pivot = new paper.Point(0, 0);
-    // this.distLines.applyMatrix = false;
-    this.distLine2.applyMatrix = false;
-    this.distLine2.pivot = new paper.Point(0, 0);
+    // Add the field of view lines:
+    this.fov = new Fov(this);
   }
 
   left() {
@@ -90,12 +64,15 @@ class Car {
   }
 
   break() {
-    this.getLineDistance(window.road);
-
+    
     this.speed -= 1;
     if (this.speed < 0) {
       this.speed = 0;
     }
+  }
+
+  getFov() {
+    return this.fov.getFov();
   }
 
   hit(track) {
@@ -106,16 +83,6 @@ class Car {
     this.vector.angle = 0;
   }
 
-  getLineDistance(road) {
-    let line2inter = road.innerRoad.getIntersections(this.distLine2);
-    if (line2inter.length > 0) {
-      console.log("intersect", line2inter.toString());
-      console.log(this.position, line2inter[0].point);
-      var line2dist = this.position.getDistance(line2inter[0].point);
-      console.log(line2dist);
-    }
-  }
-
   draw() {
     var vec = this.vector.normalize(Math.abs(this.speed));
     this.position = this.position.add(vec);
@@ -124,8 +91,7 @@ class Car {
     let rotation = this.vector.angle;
     this.carGroup.position = this.position;
     this.carGroup.rotation = rotation;
-    this.distLine2.position = this.position;
-    this.distLine2.rotation = rotation;
+    this.fov.updateFov(this.position, rotation);
 
     //    console.log(rotation, this.carGroup.rotation);
   }
