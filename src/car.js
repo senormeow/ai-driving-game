@@ -7,6 +7,7 @@ class Car {
     this.flag = flag;
     this.road = road;
     this.brain = brain;
+    this.stopped = false;
     console.log("New Car");
     this.position = new paper.Point(this.start.x, this.start.y);
     console.log("car position", this.position);
@@ -107,9 +108,15 @@ class Car {
     this.position = new paper.Point(this.start.x, this.start.y);
     this.speed = 0;
     this.vector.angle = 0;
+    this.stopped = true;
   }
 
   draw() {
+
+    if(this.stopped) {
+      return
+    }
+
     var vec = this.vector.normalize(Math.abs(this.speed));
     this.position = this.position.add(vec);
     //console.log(vec);
