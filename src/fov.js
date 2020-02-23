@@ -4,7 +4,7 @@ class Fov {
   constructor(car) {
     this.car = car;
 
-    this.lineLength = 200;
+    this.lineLength = 300;
     let front = 15;
 
     let onePoint = new paper.Point(0, 0);

@@ -2,14 +2,14 @@ import paper from "paper";
 import keyboard from "./keyboard";
 import Car from "./car";
 import Road from "./road";
-// import neataptic from "neataptic";
+import neataptic from "neataptic";
 //import ai from "./ai";
 
 (async () => {
   var canvas = document.getElementById("canv");
 
-  // var myNetwork = new neataptic.Network(2, 1);
-  // console.log(myNetwork);
+  var myNetwork = neataptic.architect.Perceptron(3, 5, 5, 1);
+  console.log(myNetwork);
 
   paper.setup(canvas);
   //paper.install(window);
@@ -38,12 +38,26 @@ import Road from "./road";
   console.log(road);
 
   var car = new Car(new paper.Point(400, 75), flag);
+  let trainingData = [];
+  let auto = false;
+
+  function addPoint(value) {
+    if (car.speed > 0) {
+      fov = car.getFov();
+      let td = { input: fov, output: [value] };
+      console.log(td);
+      trainingData.push(td);
+    }
+  }
+
 
   keyboard("ArrowLeft").press = () => {
+    addPoint(0.9);
     car.left();
   };
 
   keyboard("ArrowRight").press = () => {
+    addPoint(0.1);
     car.right();
   };
 
@@ -57,6 +71,24 @@ import Road from "./road";
 
   keyboard(" ").press = () => {
     console.log("FOV", car.getFov());
+    auto = false;
+    car.hit("manual");
+  };
+
+  keyboard("a").press = () => {
+    console.log("Auto Start");
+    auto = true;
+  };
+
+  keyboard("t").press = () => {
+    console.log(trainingData);
+    let result = myNetwork.train(trainingData, {
+      log: 10,
+      error: 0.03,
+      iterations: 1000,
+      rate: 0.3
+    });
+    console.log(result);
   };
 
   //let np = path.getNearestPoint(car.position);
@@ -72,9 +104,15 @@ import Road from "./road";
   window.car = car.carGroup;
   window.road = road;
 
-  car.foward();
+  // car.foward();
 
-  let fov = [1, 1, 1];
+  let fov = [0, 0, 0];
+
+  setInterval(() => {
+    if (car.speed > 0) {
+      addPoint(.5);
+    }
+  }, 500);
 
   paper.view.onFrame = function(event) {
     car.draw();
@@ -86,16 +124,18 @@ import Road from "./road";
       car.hit("outter");
     }
 
-    fov = car.getFov();
-
-    if (fov[0] < 0.50) {
-      //car.steer(1 - fov[0] );
-      car.right();
+    if (auto) {
+      fov = car.getFov();
+      let direction = myNetwork.activate(fov);
+      console.log(direction);
+      //car.steer(steering);
+      //steering = car.getSteering();
+      //car.steer(steering);
     }
 
-    if (fov[2] < 0.50) {
-      car.left();
-    }
+    // if (fov[2] < 0.50) {
+    //   car.left();
+    // }
 
     //console.log(inte);
   };

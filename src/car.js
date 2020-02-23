@@ -50,15 +50,15 @@ class Car {
 
   left() {
     console.log("left");
-    this.vector.angle -= 5;
+    this.vector.angle -= 12;
   }
 
   right() {
     console.log("right");
-    this.vector.angle += 5;
+    this.vector.angle += 12;
   }
 
-  // Steer value from 0 to 1 from -45 to 45
+  // Steer value from 0 to 1 from -120 to 240
   steer(value) {
     if (value < 0) {
       value = 0;
@@ -68,8 +68,15 @@ class Car {
       value = 1;
     }
 
-    this.vector.angle = -60 + (120 * value);
+    this.vector.angle = -120 + (240 * value);
 
+  }
+
+  getSteering() {
+    if(this.vector.angle === 0) {
+      return(0);
+    }
+    return this.vector.angle / 240 + .5;
   }
 
   foward() {
