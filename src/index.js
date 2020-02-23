@@ -2,16 +2,13 @@ import paper from "paper";
 import keyboard from "./keyboard";
 import Car from "./car";
 import Road from "./road";
-import neataptic from "neataptic";
-//import ai from "./ai";
+
+import Ai from "./ai";
 
 (async () => {
-  var CAR_POPULATION = 25;
+  var CAR_POPULATION = 100;
 
   var canvas = document.getElementById("canv");
-
-  var myNetwork = neataptic.architect.Perceptron(3, 5, 5, 1);
-  console.log(myNetwork);
 
   paper.setup(canvas);
   //paper.install(window);
@@ -39,9 +36,12 @@ import neataptic from "neataptic";
   var road = await Road();
   console.log(road);
 
+  var ai = new Ai(CAR_POPULATION);
+  console.log(ai.neat);
+
   var cars = [];
   for (var i = 0; i < CAR_POPULATION; i++) {
-    let c = new Car(new paper.Point(400, 75), flag, road);
+    let c = new Car(new paper.Point(400, 75), flag, road, ai.neat.population[i]);
     cars.push(c);
     c.draw();
   }
@@ -88,16 +88,16 @@ import neataptic from "neataptic";
     auto = true;
   };
 
-  keyboard("t").press = () => {
-    console.log(trainingData);
-    let result = myNetwork.train(trainingData, {
-      log: 10,
-      error: 0.03,
-      iterations: 1000,
-      rate: 0.3
-    });
-    console.log(result);
-  };
+  // keyboard("t").press = () => {
+  //   console.log(trainingData);
+  //   let result = myNetwork.train(trainingData, {
+  //     log: 10,
+  //     error: 0.03,
+  //     iterations: 1000,
+  //     rate: 0.3
+  //   });
+  //   console.log(result);
+  // };
 
   //let np = path.getNearestPoint(car.position);
   // let carvec = new paper.Point(car.position);
@@ -126,13 +126,13 @@ import neataptic from "neataptic";
 
   paper.view.onFrame = async function(event) {
     car.draw();
-    await cars.forEach((c) => {c.draw(); c.steer(Math.random() * .1 + .5)});
+    await cars.forEach((c) => {c.draw(); c.aiSteer()});
 
 
     if (auto) {
       fov = car.getFov();
-      let direction = myNetwork.activate(fov);
-      console.log(direction);
+      //let direction = myNetwork.activate(fov);
+      //console.log(direction);
       //car.steer(steering);
       //steering = car.getSteering();
       //car.steer(steering);

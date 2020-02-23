@@ -2,10 +2,11 @@ import paper from "paper";
 import Fov from "./fov";
 
 class Car {
-  constructor(start, flag, road) {
+  constructor(start, flag, road, brain) {
     this.start = start;
     this.flag = flag;
     this.road = road;
+    this.brain = brain;
     console.log("New Car");
     this.position = new paper.Point(this.start.x, this.start.y);
     console.log("car position", this.position);
@@ -71,6 +72,10 @@ class Car {
 
     this.vector.angle = -120 + (240 * value);
 
+  }
+
+  aiSteer() {
+    this.steer(this.brain.activate(this.fov.getFov)[0]);
   }
 
   getSteering() {
