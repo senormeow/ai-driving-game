@@ -56,10 +56,8 @@ import Road from "./road";
   };
 
   keyboard(" ").press = () => {
-   console.log("FOV", car.getFov()); 
+    console.log("FOV", car.getFov());
   };
-
-
 
   //let np = path.getNearestPoint(car.position);
   // let carvec = new paper.Point(car.position);
@@ -74,22 +72,29 @@ import Road from "./road";
   window.car = car.carGroup;
   window.road = road;
 
+  car.foward();
+
+  let fov = [1, 1, 1];
+
   paper.view.onFrame = function(event) {
-    // On each frame, rotate the path by 3 degrees:
-    //path.rotate(3);
     car.draw();
-
-    //var inte = car.carGroup.intersects(rect);
-
-    //var inte = path.intersects(car.carGroup.bounds);
-
-    //car.getLineDistance(road);
 
     if (car.carGroup.intersects(road.innerRoad)) {
       car.hit("inner");
     }
     if (car.carGroup.intersects(road.outterRoad)) {
       car.hit("outter");
+    }
+
+    fov = car.getFov();
+
+    if (fov[0] < 0.50) {
+      //car.steer(1 - fov[0] );
+      car.right();
+    }
+
+    if (fov[2] < 0.50) {
+      car.left();
     }
 
     //console.log(inte);
