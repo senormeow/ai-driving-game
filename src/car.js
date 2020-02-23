@@ -2,9 +2,10 @@ import paper from "paper";
 import Fov from "./fov";
 
 class Car {
-  constructor(start, flag) {
+  constructor(start, flag, road) {
     this.start = start;
     this.flag = flag;
+    this.road = road;
     console.log("New Car");
     this.position = new paper.Point(this.start.x, this.start.y);
     console.log("car position", this.position);
@@ -112,6 +113,14 @@ class Car {
     this.carGroup.position = this.position;
     this.carGroup.rotation = rotation;
     this.fov.updateFov(this.position, rotation);
+
+    
+    if (this.carGroup.intersects(this.road.innerRoad)) {
+      this.hit("inner");
+    }
+    if (this.carGroup.intersects(this.road.outterRoad)) {
+      this.hit("outter");
+    }
 
     //    console.log(rotation, this.carGroup.rotation);
   }

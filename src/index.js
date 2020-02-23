@@ -6,6 +6,8 @@ import neataptic from "neataptic";
 //import ai from "./ai";
 
 (async () => {
+  var CAR_POPULATION = 25;
+
   var canvas = document.getElementById("canv");
 
   var myNetwork = neataptic.architect.Perceptron(3, 5, 5, 1);
@@ -37,7 +39,14 @@ import neataptic from "neataptic";
   var road = await Road();
   console.log(road);
 
-  var car = new Car(new paper.Point(400, 75), flag);
+  var cars = [];
+  for (var i = 0; i < CAR_POPULATION; i++) {
+    let c = new Car(new paper.Point(400, 75), flag, road);
+    cars.push(c);
+    c.draw();
+  }
+
+  var car = new Car(new paper.Point(400, 75), flag, road);
   let trainingData = [];
   let auto = false;
 
@@ -49,7 +58,6 @@ import neataptic from "neataptic";
       trainingData.push(td);
     }
   }
-
 
   keyboard("ArrowLeft").press = () => {
     addPoint(0.9);
@@ -101,7 +109,7 @@ import neataptic from "neataptic";
   // var line = new paper.Path.Line(carvec, car.position);
   // line.strokeColor = "black";
 
-  window.car = car.carGroup;
+  //window.car = car.carGroup;
   window.road = road;
 
   // car.foward();
@@ -110,19 +118,16 @@ import neataptic from "neataptic";
 
   setInterval(() => {
     if (car.speed > 0) {
-      addPoint(.5);
+      addPoint(0.5);
     }
   }, 500);
 
-  paper.view.onFrame = function(event) {
-    car.draw();
+  await cars.forEach((c) => {c.foward()})
 
-    if (car.carGroup.intersects(road.innerRoad)) {
-      car.hit("inner");
-    }
-    if (car.carGroup.intersects(road.outterRoad)) {
-      car.hit("outter");
-    }
+  paper.view.onFrame = async function(event) {
+    car.draw();
+    await cars.forEach((c) => {c.draw(); c.steer(Math.random() * .1 + .5)});
+
 
     if (auto) {
       fov = car.getFov();
