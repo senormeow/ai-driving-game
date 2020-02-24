@@ -2,13 +2,15 @@ import paper from "paper";
 import keyboard from "./keyboard";
 import Car from "./car";
 import Road from "./road";
-
+import Controls from './controls'
 import Ai from "./ai";
 
 (async () => {
   var CAR_POPULATION = 100;
 
   var canvas = document.getElementById("canv");
+  var controls = Controls();
+  controls.updateCars(CAR_POPULATION);
 
   paper.setup(canvas);
   //paper.install(window);
