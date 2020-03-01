@@ -2,7 +2,9 @@ import paper from "paper";
 import Fov from "./fov";
 
 class Car {
-  constructor(start, flag, road, brain) {
+  constructor(start, flag, road, brain, carId, controls) {
+    this.controls = controls;
+    this.carId = carId;
     this.start = start;
     this.flag = flag;
     this.road = road;
@@ -39,6 +41,11 @@ class Car {
     this.carGroup = new paper.Group(carBody, headlight, headlight2);
     this.carGroup.strokeColor = "black";
     this.carGroup.applyMatrix = false;
+    this.carGroup.carId = this.carId;
+    this.carGroup.onMouseDown = function(event) {
+      controls.selectedCar(this.carId);
+      console.log(brain);
+    };
 
     this.vector = new paper.Point({
       angle: 0,
@@ -66,13 +73,12 @@ class Car {
     if (value < 0) {
       value = 0;
     }
-    
+
     if (value > 1) {
       value = 1;
     }
 
-    this.vector.angle = -120 + (240 * value);
-
+    this.vector.angle = -120 + 240 * value;
   }
 
   aiSteer() {
@@ -80,10 +86,10 @@ class Car {
   }
 
   getSteering() {
-    if(this.vector.angle === 0) {
-      return(0);
+    if (this.vector.angle === 0) {
+      return 0;
     }
-    return this.vector.angle / 240 + .5;
+    return this.vector.angle / 240 + 0.5;
   }
 
   foward() {
@@ -112,9 +118,8 @@ class Car {
   }
 
   draw() {
-
-    if(this.stopped) {
-      return
+    if (this.stopped) {
+      return;
     }
 
     var vec = this.vector.normalize(Math.abs(this.speed));
@@ -126,7 +131,6 @@ class Car {
     this.carGroup.rotation = rotation;
     this.fov.updateFov(this.position, rotation);
 
-    
     if (this.carGroup.intersects(this.road.innerRoad)) {
       this.hit("inner");
     }

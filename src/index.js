@@ -2,7 +2,7 @@ import paper from "paper";
 import keyboard from "./keyboard";
 import Car from "./car";
 import Road from "./road";
-import Controls from './controls'
+import Controls from "./controls";
 import Ai from "./ai";
 
 (async () => {
@@ -43,12 +43,26 @@ import Ai from "./ai";
 
   var cars = [];
   for (var i = 0; i < CAR_POPULATION; i++) {
-    let c = new Car(new paper.Point(400, 75), flag, road, ai.neat.population[i]);
+    let c = new Car(
+      new paper.Point(400, 75),
+      flag,
+      road,
+      ai.neat.population[i],
+      i,
+      controls
+    );
     cars.push(c);
     c.draw();
   }
 
-  var car = new Car(new paper.Point(400, 75), flag, road);
+  var car = new Car(
+    new paper.Point(400, 75),
+    flag,
+    road,
+    undefined,
+    500,
+    controls
+  );
   let trainingData = [];
   let auto = false;
 
@@ -90,6 +104,11 @@ import Ai from "./ai";
     auto = true;
   };
 
+  // paper.view.onMouseDown = function(event) {
+  //   var hit = car.carGroup.hitTest(event.point);
+  //   console.log(hit.item.parent.carId);
+  // };
+
   // keyboard("t").press = () => {
   //   console.log(trainingData);
   //   let result = myNetwork.train(trainingData, {
@@ -124,12 +143,16 @@ import Ai from "./ai";
     }
   }, 500);
 
-  await cars.forEach((c) => {c.foward()})
+  await cars.forEach(c => {
+    c.foward();
+  });
 
   paper.view.onFrame = async function(event) {
     car.draw();
-    await cars.forEach((c) => {c.draw(); c.aiSteer()});
-
+    await cars.forEach(c => {
+      c.draw();
+      c.aiSteer();
+    });
 
     if (auto) {
       fov = car.getFov();
