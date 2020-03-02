@@ -186,10 +186,10 @@ import Ai from "./ai";
 
   paper.view.onFrame = async function(event) {
     car.draw();
-    await cars.forEach(c => {
-      c.draw();
-      c.aiSteer();
-    });
+    // await cars.forEach(c => {
+    //   c.draw();
+    //   c.aiSteer();
+    // });
 
     if (auto) {
       fov = car.getFov();
