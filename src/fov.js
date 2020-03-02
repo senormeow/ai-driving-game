@@ -4,11 +4,11 @@ class Fov {
   constructor(car) {
     this.car = car;
 
-    this.lineLength = 300;
+    this.lineLength = 200;
     let front = 15;
 
     let onePoint = new paper.Point(0, 0);
-    onePoint.angle = -30;
+    onePoint.angle = -45;
     onePoint.length = this.lineLength;
 
     let distLine1 = new paper.Path.Line({
@@ -28,7 +28,7 @@ class Fov {
     distLine2.pivot = new paper.Point(0, 0);
 
     let threePoint = new paper.Point(0, 0);
-    threePoint.angle = 30;
+    threePoint.angle = 45;
     threePoint.length = this.lineLength;
 
     let distLine3 = new paper.Path.Line({
