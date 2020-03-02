@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import ReactDOM from "react-dom";
 
 class Controls extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = { numCars: 0, selectedCar: 0 };
   }
 
@@ -20,6 +20,7 @@ class Controls extends Component {
   }
 
   fileUpload(event) {
+    var loadPopulation = this.props.loadPopulation;
     var file = event.target.files[0];
     var reader = new FileReader();
     console.log(file);
@@ -27,7 +28,7 @@ class Controls extends Component {
     var data;
     reader.onload = function(e) {
       data = JSON.parse(e.target.result);
-      console.log(data);
+      loadPopulation(data);
     };
   }
 
@@ -38,19 +39,19 @@ class Controls extends Component {
         <h1> SelectedCar: {this.state.selectedCar}</h1>
         <h1> Generation: {this.state.generation}</h1>
         <br></br>
-        Load File:{" "}
+        Load Population:{" "}
         <input
           type="file"
           id="uploadFile"
           accept="appliction/json"
-          onChange={this.fileUpload}
+          onChange={this.fileUpload.bind(this)}
         ></input>
       </div>
     );
   }
 }
 
-export default function() {
+export default function(loadPopulation) {
   const wrapper = document.getElementById("controls");
-  return ReactDOM.render(<Controls />, wrapper);
+  return ReactDOM.render(<Controls loadPopulation={loadPopulation} />, wrapper);
 }

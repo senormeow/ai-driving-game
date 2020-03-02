@@ -1,4 +1,5 @@
 import paper from "paper";
+import neataptic from "neataptic";
 import keyboard from "./keyboard";
 import Car from "./car";
 import Road from "./road";
@@ -18,7 +19,14 @@ import Ai from "./ai";
   var generation = 0;
 
   var canvas = document.getElementById("canv");
-  var controls = Controls();
+
+  var loadedPopulation = undefined;
+
+  var loadPopulation = function(population) {
+    loadedPopulation = population;
+  };
+
+  var controls = Controls(loadPopulation);
   controls.updateCars(CAR_POPULATION);
 
   paper.setup(canvas);
@@ -97,6 +105,18 @@ import Ai from "./ai";
     car.break();
   };
 
+  keyboard("a").press = () => {
+    var brain = loadedPopulation[99];
+    brain = neataptic.Network.fromJSON(brain);
+    console.log(brain);
+
+    var newPop = [];
+    for (var i = 0; i < ai.neat.popsize; i++) {
+      newPop.push(brain);
+    }
+    ai.neat.population = newPop;
+  };
+
   keyboard(" ").press = () => {
     console.log("FOV", car.getFov());
     auto = false;
@@ -108,7 +128,7 @@ import Ai from "./ai";
 
     //Reset population with new car
     console.log("Setting population to carId", selectedCar);
-    cars[selectedCar].brain.score = 1;
+    //cars[selectedCar].brain.score = 1;
     var newPopulation = [];
     for (var i = 0; i < ai.neat.elitism; i++) {
       newPopulation.push(cars[selectedCar].brain);
@@ -186,10 +206,10 @@ import Ai from "./ai";
 
   paper.view.onFrame = async function(event) {
     car.draw();
-    // await cars.forEach(c => {
-    //   c.draw();
-    //   c.aiSteer();
-    // });
+    await cars.forEach(c => {
+      c.draw();
+      c.aiSteer();
+    });
 
     if (auto) {
       fov = car.getFov();
