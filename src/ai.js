@@ -1,10 +1,10 @@
 import neataptic from "neataptic";
 class Ai {
   constructor(popsize) {
-    var MUTATION_RATE = 0.5;
-    var ELITISM = Math.round(0.1 * popsize);
+    var MUTATION_RATE = 0.1;
+    var ELITISM = Math.round(0.3 * popsize);
     var Methods = neataptic.methods;
-    
+
     this.neat = new neataptic.Neat(3, 1, null, {
       mutation: [
         Methods.mutation.ADD_NODE,

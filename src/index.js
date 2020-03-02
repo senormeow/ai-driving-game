@@ -6,7 +6,16 @@ import Controls from "./controls";
 import Ai from "./ai";
 
 (async () => {
-  var CAR_POPULATION = 100;
+  function download(content, fileName, contentType) {
+    var a = document.createElement("a");
+    var file = new Blob([content], { type: contentType });
+    a.href = URL.createObjectURL(file);
+    a.download = fileName;
+    a.click();
+  }
+
+  const CAR_POPULATION = 100;
+  var generation = 0;
 
   var canvas = document.getElementById("canv");
   var controls = Controls();
@@ -15,18 +24,6 @@ import Ai from "./ai";
   paper.setup(canvas);
   //paper.install(window);
   /* global view */
-
-  // var path = new paper.Path();
-  // path.strokeColor = "black";
-  // var start = new paper.Point(700, 100);
-  // path.moveTo(start);
-  // path.lineTo(start.add([50, 400]));
-
-  // Draw the view now:
-  // paper.view.draw();
-  // console.log(paper.view.bounds);
-
-  // console.log('ai', ai());
 
   let flag = new paper.Path.Rectangle(
     new paper.Rectangle(new paper.Point(500, 500), new paper.Point(600, 600))
@@ -38,18 +35,25 @@ import Ai from "./ai";
   var road = await Road();
   console.log(road);
 
+  var selectedCar = 0;
+
+  var selectCallback = function(carId) {
+    selectedCar = carId;
+    controls.selectedCar(carId);
+  };
+
   var ai = new Ai(CAR_POPULATION);
   console.log(ai.neat);
 
   var cars = [];
-  for (var i = 0; i < CAR_POPULATION; i++) {
+  for (let i = 0; i < CAR_POPULATION; i++) {
     let c = new Car(
       new paper.Point(400, 75),
       flag,
       road,
       ai.neat.population[i],
       i,
-      controls
+      selectCallback
     );
     cars.push(c);
     c.draw();
@@ -61,7 +65,7 @@ import Ai from "./ai";
     road,
     undefined,
     500,
-    controls
+    selectCallback
   );
   let trainingData = [];
   let auto = false;
@@ -99,9 +103,42 @@ import Ai from "./ai";
     car.hit("manual");
   };
 
-  keyboard("a").press = () => {
-    console.log("Auto Start");
+  keyboard("t").press = async () => {
+    console.log("ReTrain");
+
+    //Reset population with new car
+    console.log("Setting population to carId", selectedCar);
+    cars[selectedCar].brain.score = 1;
+    var newPopulation = [];
+    for (var i = 0; i < ai.neat.elitism; i++) {
+      newPopulation.push(cars[selectedCar].brain);
+    }
+    for (var i = 0; i < ai.neat.popsize - ai.neat.elitism; i++) {
+      newPopulation.push(ai.neat.getOffspring());
+    }
+    ai.neat.population = newPopulation;
+    ai.neat.mutate();
+    generation++;
+    controls.updateGeneration(generation);
+
+    console.log("Mutated Population");
+    for (let i = 0; i < CAR_POPULATION; i++) {
+      cars[i].hit();
+      cars[i].brain = ai.neat.population[i];
+      cars[i].stopped = false;
+      cars[i].speed = 3;
+    }
+
     auto = true;
+  };
+
+  keyboard("s").press = () => {
+    console.log("save population");
+    download(
+      JSON.stringify(ai.neat.population),
+      "carPopulation.json",
+      "application/json"
+    );
   };
 
   // paper.view.onMouseDown = function(event) {
@@ -144,7 +181,7 @@ import Ai from "./ai";
   }, 500);
 
   await cars.forEach(c => {
-    c.foward();
+    c.speed = 3;
   });
 
   paper.view.onFrame = async function(event) {

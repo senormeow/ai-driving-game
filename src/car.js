@@ -2,8 +2,7 @@ import paper from "paper";
 import Fov from "./fov";
 
 class Car {
-  constructor(start, flag, road, brain, carId, controls) {
-    this.controls = controls;
+  constructor(start, flag, road, brain, carId, selectCallback) {
     this.carId = carId;
     this.start = start;
     this.flag = flag;
@@ -46,9 +45,9 @@ class Car {
     this.carGroup.strokeColor = "black";
     this.carGroup.applyMatrix = false;
     this.carGroup.carId = this.carId;
+
     this.carGroup.onMouseDown = function(event) {
-      controls.selectedCar(this.carId);
-      console.log(brain);
+      selectCallback(carId);
     };
 
     this.vector = new paper.Point({
@@ -84,7 +83,7 @@ class Car {
   }
 
   aiSteer() {
-    this.steer(this.brain.activate(this.fov.getFov)[0]);
+    this.steer(this.brain.activate(this.getFov())[0]);
   }
 
   getSteering() {

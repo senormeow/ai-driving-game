@@ -15,11 +15,15 @@ class Controls extends Component {
     this.setState({ selectedCar: carId });
   }
 
+  updateGeneration(g) {
+    this.setState({ generation: g });
+  }
   render() {
     return (
       <div>
         <h1> Number of cars: {this.state.numCars} </h1>
         <h1> SelectedCar: {this.state.selectedCar}</h1>
+        <h1> Generation: {this.state.generation}</h1>
       </div>
     );
   }
