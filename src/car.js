@@ -2,7 +2,7 @@ import paper from "paper";
 import Fov from "./fov";
 
 class Car {
-  constructor(start, flag, road, brain, carId, selectCallback) {
+  constructor(start, flag, road, brain, carId, engine) {
     this.carId = carId;
     this.start = start;
     this.flag = flag;
@@ -46,7 +46,7 @@ class Car {
     this.carGroup.carId = this.carId;
 
     this.carGroup.onMouseDown = function(event) {
-      selectCallback(carId);
+      engine.selectCallback(carId);
     };
 
     this.vector = new paper.Point({

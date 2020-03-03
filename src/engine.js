@@ -1,5 +1,6 @@
 import paper from "paper";
 import neataptic from "neataptic";
+import drawGraph from "./graph";
 import keyboard from "./keyboard";
 import Car from "./car";
 import Road from "./road";
@@ -36,11 +37,6 @@ export default async function(canvas, controls) {
 
   var selectedCar = 0;
 
-  var selectCallback = function(carId) {
-    selectedCar = carId;
-    controls.selectedCar(carId);
-  };
-
   var ai = new Ai(CAR_POPULATION);
   console.log(ai.neat);
 
@@ -52,20 +48,13 @@ export default async function(canvas, controls) {
       road,
       ai.neat.population[i],
       i,
-      selectCallback
+      this
     );
     cars.push(c);
     c.draw();
   }
 
-  var car = new Car(
-    new paper.Point(400, 75),
-    flag,
-    road,
-    undefined,
-    500,
-    selectCallback
-  );
+  var car = new Car(new paper.Point(400, 75), flag, road, undefined, 500, this);
   let trainingData = [];
   let auto = false;
 
@@ -77,6 +66,12 @@ export default async function(canvas, controls) {
       trainingData.push(td);
     }
   }
+
+  this.selectCallback = function(carId) {
+    selectedCar = carId;
+    controls.selectedCar(carId);
+    drawGraph(cars[selectedCar].brain.graph(200, 200), ".draw");
+  };
 
   function resetCars() {
     for (let i = 0; i < CAR_POPULATION; i++) {
