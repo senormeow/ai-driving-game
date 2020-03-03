@@ -13,9 +13,8 @@ class Car {
     this.steering = 0.5;
     this.maxSteer = 5;
 
-    console.log("New Car");
+    // console.log("New Car");
     this.position = new paper.Point(this.start.x, this.start.y);
-    console.log("car position", this.position);
     let rectangle = new paper.Rectangle(
       new paper.Point(25, 25),
       new paper.Point(75, 50)

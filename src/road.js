@@ -28,10 +28,3 @@ export default async () => {
   outterRoad.strokeColor = "black";
   return { roadParts, innerRoad, outterRoad };
 };
-// new paper.Item().importSVG("assets/main_track-split.svg", item => {
-//   road = item;
-//console.log("road", road);
-//window.road = road;
-
-//console.log(myPath);
-// });

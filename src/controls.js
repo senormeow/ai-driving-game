@@ -7,6 +7,11 @@ class Controls extends Component {
     this.state = { numCars: 0, selectedCar: 0 };
   }
 
+  setEngine(engine) {
+    console.log("engine", engine);
+    this.engine = engine;
+  }
+
   updateCars(numCars) {
     this.setState({ numCars: numCars });
   }
@@ -20,7 +25,7 @@ class Controls extends Component {
   }
 
   fileUpload(event) {
-    var loadPopulation = this.props.loadPopulation;
+    var loadPopulation = this.engine.loadPopulation;
     var file = event.target.files[0];
     var reader = new FileReader();
     console.log(file);
@@ -30,6 +35,14 @@ class Controls extends Component {
       data = JSON.parse(e.target.result);
       loadPopulation(data);
     };
+  }
+
+  reRrain(event) {
+    this.engine.reTrain();
+  }
+
+  savePopulation(event) {
+    this.engine.savePopulation();
   }
 
   render() {
@@ -46,12 +59,17 @@ class Controls extends Component {
           accept="appliction/json"
           onChange={this.fileUpload.bind(this)}
         ></input>
+        <div>
+          <button onClick={this.reRrain.bind(this)}>Re-Train</button>
+          <button onClick={this.savePopulation.bind(this)}>
+            Save Population
+          </button>
+        </div>
       </div>
     );
   }
 }
 
-export default function(loadPopulation) {
-  const wrapper = document.getElementById("controls");
-  return ReactDOM.render(<Controls loadPopulation={loadPopulation} />, wrapper);
+export default function(controlsElem) {
+  return ReactDOM.render(<Controls />, controlsElem);
 }

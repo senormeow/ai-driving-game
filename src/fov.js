@@ -3,7 +3,7 @@ import paper from "paper";
 class Fov {
   constructor(car) {
     this.car = car;
-
+    this.road = car.road;
     this.lineLength = 200;
     let front = 15;
 
@@ -68,7 +68,7 @@ class Fov {
 
   getFov() {
     return this.distLines.map(line => {
-      return this.getLineDistance(window.road, line);
+      return this.getLineDistance(this.road, line);
     });
   }
 
