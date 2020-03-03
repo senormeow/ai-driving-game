@@ -7,39 +7,26 @@ class Fov {
     this.lineLength = 200;
     let front = 15;
 
-    let onePoint = new paper.Point(0, 0);
-    onePoint.angle = -45;
-    onePoint.length = this.lineLength;
+    let angles = [-45, 0, 45];
+    let colors = ["red", "green", "blue"];
 
-    let distLine1 = new paper.Path.Line({
-      from: [front, 0],
-      to: onePoint,
-      strokeColor: "red"
-    });
-    distLine1.applyMatrix = false;
-    distLine1.pivot = new paper.Point(0, 0);
+    this.distLines = [];
 
-    let distLine2 = new paper.Path.Line({
-      from: [front, 0],
-      to: [this.lineLength, 0],
-      strokeColor: "green"
-    });
-    distLine2.applyMatrix = false;
-    distLine2.pivot = new paper.Point(0, 0);
+    for (let i = 0; i < angles.length; i++) {
+      let onePoint = new paper.Point(0, 0);
+      onePoint.angle = angles[i];
+      onePoint.length = this.lineLength;
 
-    let threePoint = new paper.Point(0, 0);
-    threePoint.angle = 45;
-    threePoint.length = this.lineLength;
+      let distLine = new paper.Path.Line({
+        from: [front, 0],
+        to: onePoint,
+        strokeColor: colors[i]
+      });
 
-    let distLine3 = new paper.Path.Line({
-      from: [front, 0],
-      to: threePoint,
-      strokeColor: "blue"
-    });
-    distLine3.applyMatrix = false;
-    distLine3.pivot = new paper.Point(0, 0);
-
-    this.distLines = [distLine1, distLine2, distLine3];
+      distLine.applyMatrix = false;
+      distLine.pivot = new paper.Point(0, 0);
+      this.distLines.push(distLine);
+    }
   }
 
   getLineDistance(road, line) {
