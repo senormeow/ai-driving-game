@@ -4,7 +4,7 @@ var path = require("path");
 
 const htmlPlugin = new HtmlWebPackPlugin({
   template: "./src/index.html",
-  filename: "./index.html"
+  filename: "./index.html",
 });
 
 module.exports = {
@@ -14,15 +14,19 @@ module.exports = {
         test: /\.js$/,
         exclude: /node_modules/,
         use: {
-          loader: 'babel-loader',
+          loader: "babel-loader",
         },
-      }
-    ]
+      },
+    ],
   },
-  plugins: [htmlPlugin, new CopyPlugin([{ from: "images", to: "assets" }])],
+  plugins: [
+    htmlPlugin,
+    new CopyPlugin({
+      patterns: [{ from: "images", to: "assets" }],
+    }),
+  ],
   output: {
-    path: path.resolve(__dirname, "./assets")
+    path: path.resolve(__dirname, "./assets"),
     //publicPath: "/assets/"
   },
-
 };
