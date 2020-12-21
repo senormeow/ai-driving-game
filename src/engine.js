@@ -1,5 +1,5 @@
 import paper from "paper";
-import neataptic from "neataptic";
+import carrot from "@liquid-carrot/carrot";
 import drawGraph from "./graph";
 import keyboard from "./keyboard";
 import Car from "./car";
@@ -7,7 +7,7 @@ import Road from "./road";
 
 import Ai from "./ai";
 
-export default async function(canvas, controls) {
+export default async function (canvas, controls) {
   function download(content, fileName, contentType) {
     var a = document.createElement("a");
     var file = new Blob([content], { type: contentType });
@@ -41,6 +41,7 @@ export default async function(canvas, controls) {
   console.log(ai.neat);
 
   var cars = [];
+  console.log("length", ai.neat.population.length);
   for (let i = 0; i < CAR_POPULATION; i++) {
     let c = new Car(
       new paper.Point(400, 75),
@@ -67,10 +68,11 @@ export default async function(canvas, controls) {
     }
   }
 
-  this.selectCallback = function(carId) {
+  this.selectCallback = function (carId) {
     selectedCar = carId;
     controls.selectedCar(carId);
-    drawGraph(cars[selectedCar].brain.graph(200, 200), ".draw");
+    console.log(cars[selectedCar]);
+    //drawGraph(cars[selectedCar].brain.graph(200, 200), ".draw");
   };
 
   function resetCars() {
@@ -82,21 +84,24 @@ export default async function(canvas, controls) {
     }
   }
 
-  this.reTrain = function() {
+  this.reTrain = function () {
     console.log("ReTrain");
 
     //Reset population with new car
     console.log("Setting population to carId", selectedCar);
-    //cars[selectedCar].brain.score = 1;
+    // cars[selectedCar].brain.score = 1;
+    var selectedBrain = cars[selectedCar].brain;
     var newPopulation = [];
     for (let i = 0; i < ai.neat.elitism; i++) {
-      newPopulation.push(cars[selectedCar].brain);
+      newPopulation.push(selectedBrain);
     }
-    for (let i = 0; i < ai.neat.popsize - ai.neat.elitism; i++) {
+    for (let i = 0; i < ai.neat.population_size - ai.neat.elitism; i++) {
       newPopulation.push(ai.neat.getOffspring());
     }
     ai.neat.population = newPopulation;
-    ai.neat.mutate();
+    console.log("newpop", ai.neat.population);
+    console.log("mut", ai.neat.mutate());
+    ai.neat.population[0] = selectedBrain;
     generation++;
     controls.updateGeneration(generation);
 
@@ -104,18 +109,18 @@ export default async function(canvas, controls) {
     resetCars();
   };
 
-  this.loadPopulation = function(population) {
+  this.loadPopulation = function (population) {
     console.log("Apply Population");
     var newPop = [];
-    for (let i = 0; i < ai.neat.popsize; i++) {
-      let brain = neataptic.Network.fromJSON(population[i]);
+    for (let i = 0; i < population.length; i++) {
+      let brain = carrot.Network.fromJSON(population[i]);
       newPop.push(brain);
     }
     ai.neat.population = newPop;
     resetCars();
   };
 
-  this.savePopulation = function() {
+  this.savePopulation = function () {
     console.log("save population");
     download(
       JSON.stringify(ai.neat.population),
@@ -160,13 +165,13 @@ export default async function(canvas, controls) {
     }
   }, 500);
 
-  await cars.forEach(c => {
+  await cars.forEach((c) => {
     c.speed = 3;
   });
 
-  paper.view.onFrame = async function(event) {
+  paper.view.onFrame = async function (event) {
     car.draw();
-    await cars.forEach(c => {
+    await cars.forEach((c) => {
       c.draw();
       c.aiSteer();
     });
