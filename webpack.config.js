@@ -17,6 +17,10 @@ module.exports = {
           loader: "babel-loader",
         },
       },
+      {
+        test: /\.(png|jpe?g|gif|svg)$/i,
+        type: "asset/resource",
+      },
     ],
   },
   plugins: [
@@ -27,6 +31,19 @@ module.exports = {
   ],
   output: {
     path: path.resolve(__dirname, "./assets"),
-    //publicPath: "/assets/"
+  },
+  devServer: {
+    static: {
+      directory: path.resolve(__dirname, "./assets"),
+    },
+  },
+  resolve: {
+    fallback: {
+      util: false,
+      os: false,
+      path: false,
+      child_process: false,
+      fs: false,
+    },
   },
 };
