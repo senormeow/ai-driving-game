@@ -5,9 +5,9 @@ import keyboard from "./keyboard";
 import Car from "./car";
 import Road from "./road";
 
-import Ai from "./ai";
+import Ai, { ELITISM_RATIO, RANDOM_INJECTION_RATIO, MUTATION_RATE, MUTATION_AMOUNT } from "./ai";
 
-export default async function(canvas, controls) {
+export default async function (canvas, controls) {
   function download(content, fileName, contentType) {
     var a = document.createElement("a");
     var file = new Blob([content], { type: contentType });
@@ -67,7 +67,7 @@ export default async function(canvas, controls) {
     }
   }
 
-  this.selectCallback = function(carId) {
+  this.selectCallback = function (carId) {
     selectedCar = carId;
     controls.selectedCar(carId);
     drawGraph(cars[selectedCar].brain.graph(200, 200), ".draw");
@@ -82,29 +82,57 @@ export default async function(canvas, controls) {
     }
   }
 
-  this.reTrain = function() {
-    console.log("ReTrain");
+  this.reTrain = function () {
+    console.log("ReTrain — generation", generation + 1);
+    console.log("Selected car:", selectedCar);
 
-    //Reset population with new car
-    console.log("Setting population to carId", selectedCar);
-    //cars[selectedCar].brain.score = 1;
-    var newPopulation = [];
-    for (let i = 0; i < ai.neat.elitism; i++) {
-      newPopulation.push(cars[selectedCar].brain);
+    const selectedBrain = cars[selectedCar].brain;
+    const popsize      = ai.neat.popsize;
+    const eliteCount   = Math.round(ELITISM_RATIO * popsize);
+    const randomCount  = Math.round(RANDOM_INJECTION_RATIO * popsize);
+    const offspringCount = popsize - eliteCount - randomCount;
+
+    // Seed neat's internal population with copies of the winner so that
+    // getOffspring() can breed from it.
+    ai.neat.population = Array.from({ length: popsize }, () =>
+      neataptic.Network.fromJSON(selectedBrain.toJSON())
+    );
+
+    const newPopulation = [];
+
+    // 1. Elite slots — exact copies of the winning brain, never mutated.
+    for (let i = 0; i < eliteCount; i++) {
+      newPopulation.push(neataptic.Network.fromJSON(selectedBrain.toJSON()));
     }
-    for (let i = 0; i < ai.neat.popsize - ai.neat.elitism; i++) {
-      newPopulation.push(ai.neat.getOffspring());
+
+    // 2. Offspring — bred from the winner pool and mutated for variety.
+    for (let i = 0; i < offspringCount; i++) {
+      const child = ai.neat.getOffspring();
+      if (Math.random() < MUTATION_RATE) {
+        for (let m = 0; m < MUTATION_AMOUNT; m++) {
+          child.mutate(ai.neat.selectMutationMethod(child));
+        }
+      }
+      newPopulation.push(child);
     }
+
+    // 3. Random injection — fresh untrained brains to prevent the population
+    //    from collapsing to a single local optimum.
+    for (let i = 0; i < randomCount; i++) {
+      newPopulation.push(new neataptic.architect.Random(3, 0, 1));
+    }
+
     ai.neat.population = newPopulation;
-    ai.neat.mutate();
     generation++;
     controls.updateGeneration(generation);
 
-    console.log("Mutated Population");
+    console.log(
+      `New population: ${eliteCount} elite, ${offspringCount} offspring, ${randomCount} random`
+    );
     resetCars();
   };
 
-  this.loadPopulation = function(population) {
+  this.loadPopulation = function (population) {
     console.log("Apply Population");
     var newPop = [];
     for (let i = 0; i < ai.neat.popsize; i++) {
@@ -115,7 +143,7 @@ export default async function(canvas, controls) {
     resetCars();
   };
 
-  this.savePopulation = function() {
+  this.savePopulation = function () {
     console.log("save population");
     download(
       JSON.stringify(ai.neat.population),
@@ -142,7 +170,7 @@ export default async function(canvas, controls) {
     car.break();
   };
 
-  keyboard("a").press = () => {};
+  keyboard("a").press = () => { };
 
   keyboard(" ").press = () => {
     console.log("FOV", car.getFov());
@@ -164,7 +192,7 @@ export default async function(canvas, controls) {
     c.speed = 3;
   });
 
-  paper.view.onFrame = async function(event) {
+  paper.view.onFrame = async function (event) {
     car.draw();
     await cars.forEach(c => {
       c.draw();
