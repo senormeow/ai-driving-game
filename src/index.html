@@ -4,23 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="https://cdn.rawgit.com/wagenaartje/neataptic/b0c454af/graph/graph.css"
-    />
-    <title>AI driving Game</title>
+    <title>AI Driving Game</title>
   </head>
   <body>
-    <section id="index">
-      <div style="float:left">
-        <canvas
-          id="canv"
-          style="width: 1024px; height: 768px;  background-color: #535353;"
-        ></canvas>
+    <div id="app">
+      <div id="canvas-area">
+        <canvas id="canv" width="1024" height="768"></canvas>
       </div>
-      <div id="controls"></div>
-    </section>
-    <svg class="draw" width="400px" height="400px"></svg>
+      <div id="sidebar">
+        <div id="controls"></div>
+        <div id="graph-section">
+          <div class="stat-section-title">Neural Network <span id="graph-hint">scroll to zoom · drag to pan · drag nodes</span></div>
+          <svg class="draw"></svg>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

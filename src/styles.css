@@ -1,0 +1,282 @@
+/* ── Reset & base ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #1a1a2e;
+  color: #e0e0e0;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 14px;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ── App shell ────────────────────────────────────────────────────── */
+#app {
+  display: flex;
+  height: 100vh;
+  /* Centre the canvas+sidebar block horizontally; any leftover space
+     becomes equal padding either side so the layout never hugs the
+     left edge of a wide monitor. */
+  justify-content: center;
+}
+
+/* ── Canvas area ──────────────────────────────────────────────────── */
+#canvas-area {
+  flex: 0 0 auto;
+  background: #0f0f1a;
+  /* Push canvas down so it sits vertically centred too */
+  display: flex;
+  align-items: center;
+}
+
+#canv {
+  display: block;
+  width: 1024px;
+  height: 768px;
+  background-color: #222233;
+}
+
+/* ── Sidebar ──────────────────────────────────────────────────────── */
+#sidebar {
+  /* Grow to fill all remaining space to the right of the canvas —
+     no max-width cap so it reaches the window edge. */
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  background: #16213e;
+  border-left: 1px solid #0f3460;
+  min-width: 260px;
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* Stats panel — no scrolling, just sized to its content */
+#controls {
+  flex: 0 0 auto;
+  overflow: visible;
+}
+
+/* Graph panel — takes all remaining space */
+#graph-section {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 16px;
+  border-top: 1px solid #0f3460;
+  min-height: 0; /* required for flex children to shrink below content size */
+}
+
+#graph-hint {
+  font-size: 9px;
+  color: #445;
+  margin-left: 6px;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  font-weight: 400;
+}
+
+svg.draw {
+  display: block;
+  flex: 1 1 0;
+  width: 100%;
+  min-height: 0;
+  background: #0f1628;
+  border-radius: 6px;
+  border: 1px solid #0f3460;
+  margin-top: 8px;
+  cursor: grab;
+}
+
+svg.draw:active { cursor: grabbing; }
+
+/* ── Sidebar header ───────────────────────────────────────────────── */
+.sidebar-header {
+  padding: 18px 16px 12px;
+  border-bottom: 1px solid #0f3460;
+}
+
+.sidebar-header h1 {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #e94560;
+  text-transform: uppercase;
+}
+
+.sidebar-header .subtitle {
+  font-size: 11px;
+  color: #667;
+  margin-top: 2px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ── Stat sections ────────────────────────────────────────────────── */
+.stat-section {
+  padding: 12px 16px;
+  border-bottom: 1px solid #0f3460;
+}
+
+.stat-section-title {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #556;
+  margin-bottom: 10px;
+}
+
+/* ── Stat row ─────────────────────────────────────────────────────── */
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 7px;
+}
+
+.stat-row:last-child { margin-bottom: 0; }
+
+.stat-label {
+  color: #889;
+  font-size: 12px;
+}
+
+.stat-value {
+  font-size: 15px;
+  font-weight: 600;
+  color: #e0e0e0;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-value.alive   { color: #4ecca3; }
+.stat-value.crashed { color: #e94560; }
+.stat-value.generation { color: #f5a623; }
+.stat-value.distance   { color: #7ec8e3; }
+
+/* ── Progress bar (alive ratio) ───────────────────────────────────── */
+.progress-bar-wrap {
+  margin-top: 8px;
+  height: 5px;
+  background: #0f3460;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4ecca3, #7ec8e3);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+/* ── Selected car badge ───────────────────────────────────────────── */
+.selected-car-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #0f3460;
+  border: 1px solid #1a5276;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 13px;
+  color: #f5a623;
+  font-weight: 600;
+}
+
+.selected-car-badge .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f5a623;
+}
+
+/* ── Action buttons ───────────────────────────────────────────────── */
+.action-section {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-bottom: 1px solid #0f3460;
+}
+
+.btn {
+  padding: 9px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.03em;
+  transition: filter 0.15s, transform 0.1s;
+  text-align: center;
+}
+
+.btn:active { transform: scale(0.97); }
+.btn:hover  { filter: brightness(1.15); }
+
+.btn-primary {
+  background: #e94560;
+  color: #fff;
+}
+
+.btn-secondary {
+  background: #0f3460;
+  color: #c0d0e0;
+  border: 1px solid #1a5276;
+}
+
+/* ── File upload ──────────────────────────────────────────────────── */
+.upload-label {
+  display: block;
+  padding: 9px 14px;
+  border-radius: 6px;
+  background: #0f3460;
+  border: 1px dashed #1a5276;
+  color: #889;
+  font-size: 12px;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.upload-label:hover {
+  border-color: #4ecca3;
+  color: #4ecca3;
+}
+
+#uploadFile { display: none; }
+
+/* ── Mutation info ────────────────────────────────────────────────── */
+.mutation-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.mutation-chip {
+  background: #0f3460;
+  border-radius: 5px;
+  padding: 6px 8px;
+}
+
+.mutation-chip .chip-label {
+  color: #556;
+  display: block;
+  margin-bottom: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 10px;
+}
+
+.mutation-chip .chip-value {
+  color: #a0c4e8;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+/* ── Neataptic graph overrides ────────────────────────────────────── */
+.node { stroke: #4ecca3; stroke-width: 1.5px; fill: #16213e; }
+.node.INPUT  { fill: #0f3460; }
+.node.OUTPUT { fill: #e94560; }
+.link { stroke: #334455; stroke-width: 1.5px; fill: none; marker-end: url(#end-arrow); }
+.label { fill: #667788; font-size: 9px; }

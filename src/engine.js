@@ -79,6 +79,7 @@ export default async function (canvas, controls) {
       cars[i].brain = ai.neat.population[i];
       cars[i].stopped = false;
       cars[i].speed = 3;
+      cars[i].distanceTravelled = 0;
     }
   }
 
@@ -192,6 +193,9 @@ export default async function (canvas, controls) {
     c.speed = 3;
   });
 
+  // Throttle stat updates — no need to re-render controls every frame (60fps).
+  let lastStatsUpdate = 0;
+
   paper.view.onFrame = async function (event) {
     car.draw();
     await cars.forEach(c => {
@@ -201,11 +205,16 @@ export default async function (canvas, controls) {
 
     if (auto) {
       fov = car.getFov();
-      //let direction = myNetwork.activate(fov);
-      //console.log(direction);
-      //car.steer(steering);
-      //steering = car.getSteering();
-      //car.steer(steering);
+    }
+
+    // Push live stats to the dashboard ~4 times per second.
+    const now = Date.now();
+    if (now - lastStatsUpdate > 250) {
+      lastStatsUpdate = now;
+      const alive   = cars.filter(c => !c.stopped).length;
+      const crashed = CAR_POPULATION - alive;
+      const bestDist = Math.max(...cars.map(c => c.distanceTravelled || 0));
+      controls.updateStats({ alive, crashed, bestDist });
     }
   };
   return this;

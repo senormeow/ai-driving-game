@@ -122,6 +122,7 @@ class Car {
     this.vector.angle += this.maxSteer * this.steering - this.maxSteer / 2;
 
     var vec = this.vector.normalize(Math.abs(this.speed));
+    this.distanceTravelled = (this.distanceTravelled || 0) + this.speed;
     this.position = this.position.add(vec);
     //console.log(vec);
     //console.log("new pos", this.position);

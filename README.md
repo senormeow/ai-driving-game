@@ -6,7 +6,7 @@ A browser-based, top-down self-driving car simulation powered by neuroevolution.
 
 ## Demo
 
-![Track overview](images/main_track.svg)
+![AI Driving Game — generation 5 in progress, dark theme UI with live stats and neural network viewer](images/ai_driving.png)
 
 ---
 
@@ -19,8 +19,8 @@ Each car is controlled by a small neural network evolved using the [NEAT](https:
 - **Population**: 100 AI cars per generation
 - **Inputs**: 3 rangefinder sensors (left, center, right at ±45°)
 - **Output**: 1 steering value (0 = full left, 1 = full right)
-- **Elitism**: Top 30% of the population is preserved each generation
-- **Mutation rate**: 10%, with the full suite of NEAT topology mutations
+- **Elitism**: Top 10% carried over unchanged each generation
+- **Mutation rate**: 80%, 2 topology mutations per member, 5% random injection
 
 ### Sensor System (FOV)
 
